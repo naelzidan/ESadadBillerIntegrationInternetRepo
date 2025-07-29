@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/EsadadAPI/bin/
+/EsadadAPI/obj/
+/Esadad.Core/bin/
+/Esadad.Core/obj/
+/EsadadInfrastructure/bin/
+/EsadadInfrastructure/obj/
+
+/EsadadInfrastructure/DTOs/.cs

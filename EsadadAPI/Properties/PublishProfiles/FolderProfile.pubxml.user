@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\IbdaaEsadadRepo\EsadadAPI\bin\Release\net8.0\publish\</_PublishTargetUrl>
+    <History>True|2024-06-24T08:24:23.0867515Z;True|2024-06-24T11:12:22.0878847+03:00;True|2024-06-24T10:59:19.9578513+03:00;True|2024-06-23T22:44:23.2467255+03:00;True|2024-06-23T22:39:59.1185888+03:00;True|2024-06-23T10:17:21.7817034+03:00;True|2024-06-21T16:54:37.2131047+03:00;True|2024-06-19T19:39:44.9411809+03:00;True|2024-06-19T19:37:03.2899699+03:00;True|2024-06-19T19:36:29.1677518+03:00;True|2024-06-19T19:20:43.0425846+03:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>
