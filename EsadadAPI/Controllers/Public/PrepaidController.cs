@@ -11,7 +11,7 @@ using System.Xml.Linq;
 
 namespace EsadadAPI.Controllers.Public
 {
-    [Route("Public/[controller]")]
+    [Route("public/prepaid")]
     [ApiController]
     public class PrepaidController : ControllerBase
     {

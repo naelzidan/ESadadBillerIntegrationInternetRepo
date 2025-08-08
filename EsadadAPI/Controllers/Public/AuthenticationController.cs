@@ -25,7 +25,7 @@ namespace Esadad.API.Controllers.Public
             _jwtSettings = jwtSettings.Value;
         }
 
-        [HttpPost("")]
+        [HttpPost]
         public IActionResult Authenticate([FromBody] AuthRequestDto request)
         {
             // return Ok(request);
@@ -79,6 +79,7 @@ Ml9+ZBa7ewKYCqjDwOeaSrQ=
 
             var res= DigitalSignatureJsonHelper.VerifyJson(jsonData, pubKey, "Data");
             if (request.Data.User == "esadad2025test" && request.Data.Secret == "maliq&ifci-l#2%km_qbl4=)j")
+            //if (request.Data.User == "esadad" && request.Data.Secret == "b7c9f182a1d5436f0cba9e47e6f21ab7f0d8c45b6d9e23fa41")
             {
                 // var token = GenerateJwtToken(request.Data.User);
                 var (token, expiryDate, tranTimestamp) = GenerateToken(request);

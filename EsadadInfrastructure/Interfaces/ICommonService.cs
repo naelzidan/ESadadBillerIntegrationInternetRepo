@@ -12,8 +12,7 @@ namespace Esadad.Infrastructure.Interfaces
         EsadadTransactionJsonLog InsertLogJson(string transactionType, string apiName, string guid, 
                                object jsonObject, Object responseObject = null);
 
-        EsadadPaymentLog InsertPaymentLog(string transactionType, string apiName, string guid,
-                               XmlElement requestElement);
+        EsadadPaymentLog InsertPaymentLog(string guid, XmlElement requestElement);
 
     }
 }

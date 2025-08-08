@@ -2,39 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
-namespace Esadad.Infrastructure.DTOs
+namespace Esadad.Infrastructure.DTOsJson
 {
-    [Serializable]
-    [XmlRoot(ElementName = "MFEP")]
     public class PaymentNotificationRequestDto
     {
-        [XmlElement(ElementName = "MsgHeader")]
+        // [XmlElement(ElementName = "MsgHeader")]
         public RequestMsgHeader MsgHeader { get; set; }
 
-        [XmlElement(ElementName = "MsgBody")]
+        //[XmlElement(ElementName = "MsgBody")]
         public PaymNotificationRequestRequestMsgBody MsgBody { get; set; }
-        [XmlElement(ElementName = "MsgFooter")]
+        // [XmlElement(ElementName = "MsgFooter")]
         public MsgFooter MsgFooter { get; set; }
     }
 
-    [Serializable]
+
     public class PaymNotificationRequestRequestMsgBody
     {
         public PaymNotificationRequestTransactions Transactions { get; set; }
     }
-    [Serializable]
+
     public class PaymNotificationRequestTransactions
     {
         public PaymNotificationRequestTrxInf TrxInf { get; set; }
     }
-    [Serializable]
+
     public class PaymNotificationRequestTrxInf
     {
-        [XmlElement(ElementName = "AcctInfo")]
-        public AcctInfo AcctInfo { get; set; }
+        public PaymNotificationAcctInfo AcctInfo { get; set; }
         public long JOEBPPSTrx { get; set; } // Mandatory, Integer, Long
         public string BankTrxID { get; set; } // Mandatory, String, No length restriction provided
         public int BankCode { get; set; } // Mandatory, Integer, Up to 3 digits
@@ -44,7 +41,15 @@ namespace Esadad.Infrastructure.DTOs
         public decimal FeesAmt { get; set; } // Mandatory, Decimal, Up to (12,3)
         public bool FeesOnBiller { get; set; } // Boolean, Yes/No
         public DateTime ProcessDate { get; set; } // Mandatory
+        [JsonIgnore] // System.Text.Json
         public DateTime STMTDate { get; set; } // Mandatory
+
+        [JsonPropertyName("STMTDate")]
+        public string STMTDateJson
+        {
+            get => STMTDate.ToString("yyyy-MM-dd");
+            set => STMTDate = DateTime.Parse(value);
+        }
         public string AccessChannel { get; set; } // Optional, Enum, Up to 15 chars
         public string PaymentMethod { get; set; } // Optional, String, Up to 15 chars
         public string PaymentType { get; set; } // Optional, String, Up to 15 chars
@@ -52,17 +57,12 @@ namespace Esadad.Infrastructure.DTOs
         public ServiceTypeDetails ServiceTypeDetails { get; set; }
         public SubPmts SubPmts { get; set; }
     }
-    [Serializable]
-    [XmlRoot(ElementName = "AcctInfo")]
+
     public class PaymNotificationAcctInfo
     {
-        [XmlElement(ElementName = "BillingNo")]
+ 
         public string BillingNo { get; set; }
-
-        [XmlElement(ElementName = "BillNo")]
         public string BillNo { get; set; }
-
-        [XmlElement(ElementName = "BillerCode")]
         public int BillerCode { get; set; }
     }
 }

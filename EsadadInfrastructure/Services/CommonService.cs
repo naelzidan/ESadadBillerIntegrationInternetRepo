@@ -1,12 +1,14 @@
 ﻿using Esadad.Core.Entities;
 using Esadad.Infrastructure.DTOs;
-using Esadad.Infrastructure.DTOsJson;
+//using Esadad.Infrastructure.DTOsJson;
 
 using Esadad.Infrastructure.Helpers;
 using Esadad.Infrastructure.Interfaces;
 using Esadad.Infrastructure.MemCache;
 using Esadad.Infrastructure.Persistence;
 using System.Xml;
+using PrePaidRequestDto = Esadad.Infrastructure.DTOs.PrePaidRequestDto;
+using PrePaidResponseDto = Esadad.Infrastructure.DTOs.PrePaidResponseDto;
 
 namespace Esadad.Infrastructure.Services
 {
@@ -14,13 +16,13 @@ namespace Esadad.Infrastructure.Services
     {
         private readonly EsadadIntegrationDbContext _context = context;
 
-        public EsadadTransactionLog InsertLog(string transactionType, string apiName, string guid, XmlElement xmlElement, Object responseObject=null)
+        public EsadadTransactionLog InsertLog(string transactionType, string apiName, string guid, XmlElement xmlElement, Object responseObject = null)
         {
-           
+
             //BillPullRequest billPullRequestObj = null;
             EsadadTransactionLog esadadTransactionLog = null;
 
-           
+
             //PaymentNotificationRequestDto paymentNotificationRequestDtoObj = null;
 
             if (transactionType.ToLower() == "request")
@@ -56,13 +58,13 @@ namespace Esadad.Infrastructure.Services
                         ServiceType = paymentNotificationRequestDtoObj.MsgBody.Transactions.TrxInf.ServiceTypeDetails.ServiceType,
                         Currency = MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == paymentNotificationRequestDtoObj.MsgBody.Transactions.TrxInf.ServiceTypeDetails.ServiceType).Currency,
                         ValidationCode = paymentNotificationRequestDtoObj.MsgBody.Transactions.TrxInf.AcctInfo.BillNo,
-                        PrepaidCat= paymentNotificationRequestDtoObj.MsgBody.Transactions.TrxInf.ServiceTypeDetails.PrepaidCat,
+                        PrepaidCat = paymentNotificationRequestDtoObj.MsgBody.Transactions.TrxInf.ServiceTypeDetails.PrepaidCat,
                         TranXmlElement = xmlElement.OuterXml
                     };
                 }
                 else if (apiName == "PrepaidValidation")
                 {
-                    var prepaidValidationRequestObj = XmlToObjectHelper.DeserializeXmlToObject(xmlElement, new DTOs.PrePaidRequestDto());
+                    var prepaidValidationRequestObj = XmlToObjectHelper.DeserializeXmlToObject(xmlElement, new PrePaidRequestDto());
                     esadadTransactionLog = new EsadadTransactionLog
                     {
                         TransactionType = transactionType,
@@ -78,11 +80,11 @@ namespace Esadad.Infrastructure.Services
                 }
 
             }
-            else if (transactionType.ToLower() == "response" && xmlElement != null)
-                {
+            else if (transactionType.ToLower() == "response" && (xmlElement != null || responseObject != null))
+            {
                 if (apiName == "BillPull")
                 {
-                    var billPullResponseObj = (BillPullResponse) responseObject;
+                    var billPullResponseObj = (BillPullResponse)responseObject;
                     esadadTransactionLog = new EsadadTransactionLog
                     {
                         TransactionType = transactionType,
@@ -93,7 +95,7 @@ namespace Esadad.Infrastructure.Services
                         BillNumber = billPullResponseObj.MsgBody.BillsRec.BillRec.AcctInfo.BillNo,
                         ServiceType = billPullResponseObj.MsgBody.BillsRec.BillRec.ServiceType,
                         Currency = MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == billPullResponseObj.MsgBody.BillsRec.BillRec.ServiceType).Currency,
-                        TranXmlElement = xmlElement.OuterXml
+                        TranXmlElement = ObjectToXmlHelper.ObjectToXmlElement(billPullResponseObj).OuterXml //xmlElement.OuterXml
                     };
 
                 }
@@ -105,14 +107,14 @@ namespace Esadad.Infrastructure.Services
                         TransactionType = transactionType,
                         ApiName = apiName,
                         Guid = guid,
-                        Timestamp = paymentNotificationResponseDtoObj.MsgHeader.TmStp,                       
-                        TranXmlElement = xmlElement.OuterXml
+                        Timestamp = paymentNotificationResponseDtoObj.MsgHeader.TmStp,
+                        TranXmlElement = xmlElement.OuterXml//xmlElement.OuterXml
                     };
 
                 }
                 else if (apiName == "PrepaidValidation")
                 {
-                    var prepaidValidationResponseObj = XmlToObjectHelper.DeserializeXmlToObject(xmlElement, new DTOs.PrePaidResponseDto());
+                    var prepaidValidationResponseObj = XmlToObjectHelper.DeserializeXmlToObject(xmlElement, new PrePaidResponseDto());
                     esadadTransactionLog = new EsadadTransactionLog
                     {
                         TransactionType = transactionType,
@@ -122,7 +124,7 @@ namespace Esadad.Infrastructure.Services
                         BillingNumber = prepaidValidationResponseObj.MsgBody.BillingInfo.AcctInfo.BillingNo,
                         ServiceType = prepaidValidationResponseObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType,
                         PrepaidCat = prepaidValidationResponseObj.MsgBody.BillingInfo.ServiceTypeDetails.PrepaidCat,
-                        TranXmlElement = xmlElement.OuterXml
+                        TranXmlElement = xmlElement.OuterXml //xmlElement.OuterXml
                     };
 
                 }
@@ -136,6 +138,44 @@ namespace Esadad.Infrastructure.Services
             return query;
         }
 
+
+        public EsadadPaymentLog InsertPaymentLog(string guid, XmlElement xmlElement)
+        {
+            var paymentNotificationRequestDto = XmlToObjectHelper.DeserializeXmlToObject(xmlElement, new PaymentNotificationRequestDto());
+
+            var esadadPaymentLog = new EsadadPaymentLog()
+            {
+                Guid = guid,
+                BillingNumber = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.AcctInfo.BillingNo,
+                BillNumber = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.AcctInfo.BillingNo,
+                JOEBPPSTrx = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.JOEBPPSTrx.ToString(),
+                BankTrxID = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.BankTrxID.ToString(),
+                BankCode = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.BankCode,
+                DueAmt = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.DueAmt,
+                PaidAmt = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.PaidAmt,
+                FeesAmt = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.FeesAmt,
+                FeesOnBiller = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.FeesOnBiller,
+                ProcessDate = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.ProcessDate,
+                STMTDate = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.STMTDate,
+                AccessChannel = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.AccessChannel,
+                PaymentMethod = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.PaymentMethod,
+                PaymentType = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.PaymentType,
+                Currency = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.Currency,
+                ServiceType = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.ServiceTypeDetails.ServiceType,
+                PrepaidCat = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.ServiceTypeDetails.PrepaidCat,
+                Amount = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.SubPmts.SubPmt.Amount,
+                SetBnkCode = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.SubPmts.SubPmt.SetBnkCode,
+                AcctNo = paymentNotificationRequestDto.MsgBody.Transactions.TrxInf.SubPmts.SubPmt.AcctNo,
+                IsPaymentPosted = false,
+                InsertDate = DateTime.Now
+            };
+
+            var query = _context.EsadadPaymentsLogs.Add(esadadPaymentLog).Entity;
+
+            _context.SaveChanges();
+            return query;
+
+        }
         public EsadadTransactionJsonLog InsertLogJson(string transactionType, string apiName, string guid, object jsonObject, Object responseObject = null)
         {
 
@@ -168,7 +208,7 @@ namespace Esadad.Infrastructure.Services
                 {
 
                     //var paymentNotificationRequestDtoObj = XmlToObjectHelper.DeserializeXmlToObject(xmlElement, new PaymentNotificationRequestDto());
-                    var paymentNotificationRequestDtoObj = ObjectCasterHelper.CastTo<PaymentNotificationRequestDto>(jsonObject);
+                    var paymentNotificationRequestDtoObj = ObjectCasterHelper.CastTo<DTOsJson.PaymentNotificationRequestDto>(jsonObject);
                     esadadTransactionJsonLog = new EsadadTransactionJsonLog
                     {
                         TransactionType = transactionType,
@@ -265,9 +305,6 @@ namespace Esadad.Infrastructure.Services
         }
 
 
-        EsadadPaymentLog ICommonService.InsertPaymentLog(string transactionType, string apiName, string guid, XmlElement requestElement)
-        {
-            throw new NotImplementedException();
-        }
+   
     }
 }

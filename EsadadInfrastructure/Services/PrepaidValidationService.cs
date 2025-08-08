@@ -146,7 +146,7 @@ namespace Esadad.Infrastructure.Services
                                 BillerCode = MemoryCache.Biller.Code
                             },
                             DueAmt = 0,
-                            Currency = MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).Currency,
+                            Currency = "ILS",// MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).Currency,
                             ValidationCode = prepaidValidationRequestObj.MsgBody.BillingInfo.ValidationCode,
                             ServiceTypeDetails = new ServiceTypeDetails()
                             {
@@ -158,9 +158,9 @@ namespace Esadad.Infrastructure.Services
                                 {
 
                                     // rertrive service type category value (Replace 0)
-                                    Amount = CurrencyHelper.AdjustDecimal(0, MemoryCache.Currencies[MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).Currency], DecimalAdjustment.Truncate),
-                                    SetBnkCode = MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).BankCode,
-                                    AcctNo = MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).IBAN
+                                    Amount = 10,//CurrencyHelper.AdjustDecimal(0, MemoryCache.Currencies[MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).Currency], DecimalAdjustment.Truncate),
+                                    SetBnkCode = 8,//MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).BankCode,
+                                    AcctNo = "",//MemoryCache.Biller.Services.First(b => b.ServiceTypeCode == prepaidValidationRequestObj.MsgBody.BillingInfo.ServiceTypeDetails.ServiceType).IBAN
                                 }
                             }
                         }

@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace EsadadAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("prepaid")]
     [ApiController]
     [Consumes("application/xml")]
     [Produces("application/xml")]

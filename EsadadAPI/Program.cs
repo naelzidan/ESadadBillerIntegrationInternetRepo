@@ -48,11 +48,20 @@ builder.Services.Configure<Certificates>(builder.Configuration.GetSection("Certi
 builder.Services.AddSingleton<IOptionsMonitor<Certificates>, OptionsMonitor<Certificates>>();
 
 //registering services in the dependency injection
+
+//XML Services
 builder.Services.AddTransient<IBillPullService, BillPullService>();
 builder.Services.AddTransient<IPaymentNotificationService, PaymentNotificationService>();
 builder.Services.AddTransient<ICommonService, CommonService>();
 builder.Services.AddTransient<IPrepaidValidationService, PrepaidValidationService>();
+
+
+
+// JSON Services
+
 builder.Services.AddTransient<IPrepaidValidationJsonService, PrepaidValidationJsonService>();
+builder.Services.AddTransient<IPaymentNotificationJsonService, PaymentNotificationJsonService>();
+
 
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
@@ -84,10 +93,16 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
     app.UseSwagger();
-    app.UseSwaggerUI();
+   app.UseSwaggerUI();
+//app.UseSwaggerUI(c =>
+//{
+//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+//});
 //}
 
 app.UseAuthorization();

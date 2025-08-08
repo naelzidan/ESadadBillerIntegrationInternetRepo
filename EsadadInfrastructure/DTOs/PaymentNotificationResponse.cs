@@ -33,7 +33,7 @@ namespace Esadad.Infrastructure.DTOs
     public class PaymentNotificationResponseTrxInf
     {
         [XmlElement(ElementName = "JOEBPPSTrx")]
-        public string JOEBPPSTrx { get; set; }
+        public long JOEBPPSTrx { get; set; }
 
         [XmlElement(ElementName = "ProcessDate")]
         public DateTime ProcessDate { get; set; }
